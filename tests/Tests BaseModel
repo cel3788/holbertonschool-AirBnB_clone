@@ -1,0 +1,25 @@
+from models.base_model import BaseModel
+import unittest
+
+class TestBaseModel(unittest.TestCase):
+
+    def test_str_method(self):
+        model = BaseModel()
+        self.assertEqual(str(model), "[BaseModel] ({}) {}".format(model.id, model.__dict__))
+
+    def test_save_method(self):
+        model = BaseModel()
+        original_updated_at = model.updated_at
+        model.save()
+        self.assertNotEqual(original_updated_at, model.updated_at)
+
+    def test_to_dict_method(self):
+        model = BaseModel()
+        model_json = model.to_dict()
+        self.assertEqual(model_json['__class__'], 'BaseModel')
+        self.assertIn('created_at', model_json)
+        self.assertIn('updated_at', model_json)
+        self.assertIn('id', model_json)
+
+if __name__ == '__main__':
+    unittest.main()
