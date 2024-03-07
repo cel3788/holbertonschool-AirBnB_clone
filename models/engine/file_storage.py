@@ -1,5 +1,3 @@
-# models/engine/file_storage.py
-
 import json
 import os
 
