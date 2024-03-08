@@ -1,18 +1,16 @@
-import os
 import unittest
 import MySQLdb
 import sqlalchemy
 from io import StringIO
 from unittest.mock import patch
 from console import HBNBCommand
-from models import storage
 from models.user import User
-import unittest
-from console import HBNBCommand
-from unittest.mock import patch
-from io import StringIO
 import os
 
+# Define a clear_stream function to reset the content of a StringIO object
+def clear_stream(stream):
+    stream.seek(0)
+    stream.truncate()
 
 class TestConsole(unittest.TestCase):
 
@@ -46,8 +44,6 @@ class TestConsole(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
 
 class TestHBNBCommand(unittest.TestCase):
 
