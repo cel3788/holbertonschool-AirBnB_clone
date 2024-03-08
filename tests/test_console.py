@@ -100,5 +100,38 @@ class TestHBNBCommand(unittest.TestCase):
             output = f.getvalue().strip()
             self.assertTrue(output)
 
+    # Test quit command
+    def test_quit_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("quit")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "")
+
+    # Test EOF command
+    def test_EOF_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("EOF")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "")
+
+    # Test empty line command
+    def test_empty_line_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("\n")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "")
+
+    # Test create BaseModel command
+    def test_create_base_model_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("create BaseModel")
+            output = f.getvalue().strip()
+            # Add assertions for the expected output
+
+  
+
+if __name__ == '__main__':
+    unittest.main()
+
 if __name__ == '__main__':
     unittest.main()
