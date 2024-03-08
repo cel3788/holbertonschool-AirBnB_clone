@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 """ """
+from cache import Cache
+
 from models.base_model import BaseModel
 import unittest
 import datetime
