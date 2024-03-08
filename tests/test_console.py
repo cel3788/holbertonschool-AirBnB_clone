@@ -151,3 +151,8 @@ class TestHBNBCommand(unittest.TestCase):
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("help show")
             self.assertEqual(f.getvalue().strip(), "Prints the string representation of an instance")
+            
+    def test_quit_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            with self.assertRaises(SystemExit):
+                HBNBCommand().onecmd("quit")
