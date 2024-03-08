@@ -145,3 +145,9 @@ class TestHBNBCommand(unittest.TestCase):
             cons.onecmd('count State')
             cursor.close()
             dbc.close()
+
+    def test_help_show(self):
+        """Test the help show command."""
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help show")
+            self.assertEqual(f.getvalue().strip(), "Prints the string representation of an instance")
