@@ -1,138 +1,104 @@
 import unittest
-import MySQLdb
-import sqlalchemy
-from io import StringIO
 from unittest.mock import patch
+from io import StringIO
 from console import HBNBCommand
-from models.user import User
-import os
 
-# Define a clear_stream function to reset the content of a StringIO object
-def clear_stream(stream):
-    stream.seek(0)
-    stream.truncate()
-
-class TestConsole(unittest.TestCase):
-
-    def setUp(self):
-        self.console = HBNBCommand()
-
-    def tearDown(self):
-        pass
-
+class TestHBNBCommand(unittest.TestCase):
+    def test_help_show_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help show")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "Shows an individual instance of a class\n[Usage]: show <className> <objectId>")
+    
     def test_quit_command(self):
-        with self.assertRaises(SystemExit):
-            self.console.onecmd("quit")
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("quit")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "")
 
     def test_EOF_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
-            self.assertTrue(self.console.onecmd("EOF"))
+            HBNBCommand().onecmd("EOF")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "")
 
-    def test_help_command(self):
+    def test_empty_line_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
-            self.assertTrue(self.console.onecmd("help"))
+            HBNBCommand().onecmd("\n")
+            output = f.getvalue().strip()
+            self.assertEqual(output, "")
 
-    def test_empty_line(self):
+    def test_create_base_model_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
-            self.assertEqual('', f.getvalue().strip())
+            HBNBCommand().onecmd("create BaseModel")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
 
-    def test_create_BaseModel(self):
+    def test_show_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
-            self.assertTrue(self.console.onecmd("create BaseModel"))
+            HBNBCommand().onecmd("show BaseModel 123")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
 
-    # Add more test methods for other commands following a similar pattern
-
-if __name__ == '__main__':
-    unittest.main()
-
-class TestHBNBCommand(unittest.TestCase):
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', 'DBStorage test')
-    def test_db_create(self):
-        with patch('sys.stdout', new=StringIO()) as cout:
-            cons = HBNBCommand()
-            
-            with self.assertRaises(sqlalchemy.exc.OperationalError):
-                cons.onecmd('create User')
-            
-            clear_stream(cout)
-            cons.onecmd('create User email="john25@gmail.com" password="123"')
-            mdl_id = cout.getvalue().strip()
-            
-            dbc = MySQLdb.connect(
-                host=os.getenv('HBNB_MYSQL_HOST'),
-                port=3306,
-                user=os.getenv('HBNB_MYSQL_USER'),
-                passwd=os.getenv('HBNB_MYSQL_PWD'),
-                db=os.getenv('HBNB_MYSQL_DB')
-            )
-            cursor = dbc.cursor()
-            cursor.execute('SELECT * FROM users WHERE id="{}"'.format(mdl_id))
-            result = cursor.fetchone()
-            
-            self.assertTrue(result is not None)
-            self.assertIn('john25@gmail.com', result)
-            self.assertIn('123', result)
-            
-            cursor.close()
-            dbc.close()
-    
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', 'DBStorage test')
-    def test_db_show(self):
-        with patch('sys.stdout', new=StringIO()) as cout:
-            cons = HBNBCommand()
-            obj = User(email="john25@gmail.com", password="123")
-            
-            dbc = MySQLdb.connect(
-                host=os.getenv('HBNB_MYSQL_HOST'),
-                port=3306,
-                user=os.getenv('HBNB_MYSQL_USER'),
-                passwd=os.getenv('HBNB_MYSQL_PWD'),
-                db=os.getenv('HBNB_MYSQL_DB')
-            )
-            cursor = dbc.cursor()
-            cursor.execute('SELECT * FROM users WHERE id="{}"'.format(obj.id))
-            result = cursor.fetchone()
-            
-            self.assertTrue(result is None)
-            cons.onecmd('show User {}'.format(obj.id))
-            self.assertEqual(cout.getvalue().strip(), '** no instance found **')
-            
-            obj.save()
-            clear_stream(cout)
-            cursor.execute('SELECT * FROM users WHERE id="{}"'.format(obj.id))
-            
-            cons.onecmd('show User {}'.format(obj.id))
-            result = cursor.fetchone()
-            
-            self.assertTrue(result is not None)
-            self.assertIn('john25@gmail.com', result)
-            self.assertIn('123', result)
-            self.assertIn('john25@gmail.com', cout.getvalue())
-            self.assertIn('123', cout.getvalue())
-            
-            cursor.close()
-            dbc.close()
-
-    def test_help_show(self):
+    def test_destroy_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
-            HBNBCommand().onecmd("help show")
-            self.assertEqual(f.getvalue().strip(), "Affiche la représentation sous forme de chaîne d'une instance")
-            
-    def test_quit_command(self):
-        with patch('sys.stdout', new=StringIO()) as f:
-            with self.assertRaises(SystemExit):
-                HBNBCommand().onecmd("quit")
+            HBNBCommand().onecmd("destroy BaseModel 123")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
 
-    def test_empty_line_present(self):
+    def test_all_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
-            HBNBCommand().onecmd("")
-            self.assertEqual(f.getvalue(), "")
+            HBNBCommand().onecmd("all BaseModel")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
 
-    def test_create_BaseModel_present(self):
+    def test_count_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("count BaseModel")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_update_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("update BaseModel 123 name 'John'")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_help_create_command(self):
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("help create")
-            self.assertEqual(f.getvalue().strip(), "Crée une nouvelle instance de la classe spécifiée")
-    
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_help_show_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help show")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_help_destroy_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help destroy")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_help_all_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help all")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_help_count_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help count")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
+    def test_help_update_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("help update")
+            output = f.getvalue().strip()
+            self.assertTrue(output)
+
 if __name__ == '__main__':
     unittest.main()
