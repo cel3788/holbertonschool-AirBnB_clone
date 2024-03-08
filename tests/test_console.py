@@ -165,10 +165,5 @@ class TestConsole(unittest.TestCase):
             output = f.getvalue().strip()
             # Add assertions for the expected output
 
-  
-
-if __name__ == '__main__':
-    unittest.main()
-
 if __name__ == '__main__':
     unittest.main()
