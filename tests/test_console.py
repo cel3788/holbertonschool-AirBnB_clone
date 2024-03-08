@@ -7,6 +7,46 @@ from unittest.mock import patch
 from console import HBNBCommand
 from models import storage
 from models.user import User
+import unittest
+from console import HBNBCommand
+from unittest.mock import patch
+from io import StringIO
+import os
+
+
+class TestConsole(unittest.TestCase):
+
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        pass
+
+    def test_quit_command(self):
+        with self.assertRaises(SystemExit):
+            self.console.onecmd("quit")
+
+    def test_EOF_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.assertTrue(self.console.onecmd("EOF"))
+
+    def test_help_command(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.assertTrue(self.console.onecmd("help"))
+
+    def test_empty_line(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.assertEqual('', f.getvalue().strip())
+
+    def test_create_BaseModel(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            self.assertTrue(self.console.onecmd("create BaseModel"))
+
+    # Add more test methods for other commands following a similar pattern
+
+if __name__ == '__main__':
+    unittest.main()
+
 
 
 class TestHBNBCommand(unittest.TestCase):
