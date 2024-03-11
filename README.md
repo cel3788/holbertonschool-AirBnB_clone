@@ -93,4 +93,5 @@ Non interactive mode:
 ## Authors
 
 Célestine Millot
+
 Leila Louajri
